@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/home_tab_label" />
+    <item
+        android:id="@+id/coming_soon"
+        android:icon="@drawable/ic_video_library"
+        android:title="@string/coming_soon_tab_label" />
+    <item
+        android:id="@+id/downloads"
+        android:icon="@drawable/ic_download_circle"
+        android:title="@string/downloads_tab_label" />
+</menu>

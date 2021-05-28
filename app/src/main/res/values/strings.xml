@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NetflixClone</string>
+    <string name="home_tab_label">Home</string>
+    <string name="coming_soon_tab_label">Coming Soon</string>
+    <string name="downloads_tab_label">Downloads</string>
+    <string name="smart_downloads">Smart Downloads</string>
+    <string name="introducing_downloads_for_you">Introducing Downloads for You</string>
+    <string name="we_ll_download_a_personalized">We\'ll download a personalized selection of movies and shows for you, so there\'s always something to watch on your phone.</string>
+    <string name="set_up">SET UP</string>
+    <string name="find_something_to_download">Find Something to Download</string>
+</resources>

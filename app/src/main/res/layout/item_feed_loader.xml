@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/shimmer_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/poster"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="2.3:1"
+            app:layout_constraintWidth_percent="0.65"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/poster"
+            android:layout_marginTop="16dp"
+            app:layout_constraintDimensionRatio="10:1"
+            app:layout_constraintWidth_percent="0.75"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/menu"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            android:layout_marginTop="16dp"
+            app:layout_constraintDimensionRatio="2.5:1"
+            app:layout_constraintWidth_percent="0.25"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/media_1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/menu"
+            android:layout_marginTop="48dp"
+            app:layout_constraintDimensionRatio="1:1.4"
+            app:layout_constraintWidth_percent="0.26"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/media_2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/media_1"
+            app:layout_constraintTop_toBottomOf="@id/menu"
+            app:layout_constraintTop_toTopOf="@id/media_1"
+            app:layout_constraintDimensionRatio="1:1.4"
+            app:layout_constraintWidth_percent="0.26"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/media_3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/media_2"
+            app:layout_constraintTop_toBottomOf="@id/menu"
+            app:layout_constraintTop_toTopOf="@id/media_1"
+            app:layout_constraintDimensionRatio="1:1.4"
+            app:layout_constraintWidth_percent="0.26"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/media_4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/media_3"
+            app:layout_constraintTop_toBottomOf="@id/menu"
+            app:layout_constraintTop_toTopOf="@id/media_1"
+            app:layout_constraintDimensionRatio="1:1.4"
+            app:layout_constraintWidth_percent="0.26"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/dark_gray"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

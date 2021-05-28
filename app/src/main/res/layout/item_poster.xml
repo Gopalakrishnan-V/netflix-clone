@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:foreground="?selectableItemBackgroundBorderless"
+    android:layout_margin="2dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    tools:targetApi="m"
+    tools:ignore="UnusedAttribute">
+
+    <ImageView
+        android:id="@+id/poster_image"
+        android:layout_width="105dp"
+        android:layout_height="140dp"
+        android:scaleType="centerCrop"
+        android:background="@drawable/poster_bg" />
+</LinearLayout>
