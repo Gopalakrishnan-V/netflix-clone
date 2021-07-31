@@ -1,5 +1,6 @@
 package com.netflixclone.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -11,8 +12,10 @@ import com.netflixclone.adapters.VideosController
 import com.netflixclone.data.Injection
 import com.netflixclone.data.MovieDetailsViewModel
 import com.netflixclone.data_models.Movie
+import com.netflixclone.data_models.Video
 import com.netflixclone.databinding.ActivityMovieDetailsBinding
 import com.netflixclone.extensions.*
+import com.netflixclone.network.models.MovieDetailsResponse
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -78,43 +81,29 @@ class MovieDetailsActivity : BaseActivity() {
         binding.videosList.isNestedScrollingEnabled = false
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setupViewModel() {
         movieDetailsViewModel = ViewModelProvider(this,
             Injection.provideMovieDetailsViewModelFactory()).get(MovieDetailsViewModel::class.java)
 
-        movieDetailsViewModel.movieDetailsLoading.observe(this) { checkAndShowLoader() }
-        movieDetailsViewModel.movieDetails.observe(this) { updateDetails() }
-        movieDetailsViewModel.similarMoviesLoading.observe(this) { checkAndShowLoader() }
-        movieDetailsViewModel.similarMovies.observe(this) {
-            similarMoviesItemsAdapter.submitList(it)
-            similarMoviesItemsAdapter.notifyDataSetChanged()
-        }
-        movieDetailsViewModel.movieVideosLoading.observe(this) { checkAndShowLoader() }
-        movieDetailsViewModel.movieVideos.observe(this) {
-            checkAndLoadVideo()
-            videosController.setData(it)
+        movieDetailsViewModel.details.observe(this) {
+            if (it.isLoading && it.data == null) {
+                showLoader(true)
+            } else if (it.data != null) {
+                showLoader(false)
+                updateDetails(it.data)
+            }
         }
     }
 
     private fun fetchData() {
-        movieId?.let {
-            movieDetailsViewModel.fetchMovieDetails(it)
-            movieDetailsViewModel.fetchSimilarMovies(it)
-            movieDetailsViewModel.fetchMovieVideos(it)
+        if (movieId != null) {
+            movieDetailsViewModel.fetchMovieDetails(movieId!!)
         }
     }
 
-    private fun checkAndShowLoader() {
-        val detailsLoading = movieDetailsViewModel.movieDetailsLoading.value!!
-        val details = movieDetailsViewModel.movieDetails.value
-        val similarMoviesLoading = movieDetailsViewModel.similarMoviesLoading.value!!
-        val similarMovies = movieDetailsViewModel.similarMovies.value
-        val videosLoading = movieDetailsViewModel.movieVideosLoading.value!!
-        val videos = movieDetailsViewModel.movieVideos.value
-
-        val loading =
-            (detailsLoading && details == null) || (similarMoviesLoading && similarMovies == null) || (videosLoading && videos == null)
-        if (loading) {
+    private fun showLoader(flag: Boolean) {
+        if (flag) {
             binding.loader.root.show()
             binding.content.hide()
             binding.youtubePlayerView.hide()
@@ -126,8 +115,9 @@ class MovieDetailsActivity : BaseActivity() {
         }
     }
 
-    private fun updateDetails() {
-        val details = movieDetailsViewModel.movieDetails.value!!
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateDetails(details: MovieDetailsResponse) {
+        // Basic details
         Glide.with(this).load(details.getBackdropUrl()).transform(CenterCrop())
             .into(binding.thumbnail.backdropImage)
         binding.header.titleText.text = details.title
@@ -135,12 +125,20 @@ class MovieDetailsActivity : BaseActivity() {
         binding.header.yearText.text = details.getReleaseYear()
         binding.header.runtimeText.text = details.getRunTime()
         binding.header.ratingText.text = details.voteAverage.toString()
+
+        // Similar movies
+        similarMoviesItemsAdapter.submitList(details.similar.results)
+        similarMoviesItemsAdapter.notifyDataSetChanged()
+
+        // Videos
+        checkAndLoadVideo(details.videos.results)
+        videosController.setData(details.videos.results)
     }
 
-    private fun checkAndLoadVideo() {
-        val videos = movieDetailsViewModel.movieVideos.value
-        val firstVideo = videos?.firstOrNull()
-        if (firstVideo?.site == "YouTube") {
+    private fun checkAndLoadVideo(videos: List<Video>) {
+        val firstVideo =
+            videos.firstOrNull { video -> (video.type == "Trailer") && video.site == "YouTube" }
+        if (firstVideo != null) {
             if (!bannerVideoLoaded) {
                 binding.youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                     override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {

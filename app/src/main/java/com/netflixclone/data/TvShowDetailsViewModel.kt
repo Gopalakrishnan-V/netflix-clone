@@ -3,8 +3,8 @@ package com.netflixclone.data
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.netflixclone.data_models.TvShow
-import com.netflixclone.data_models.Video
+import com.netflixclone.data_models.Resource
+import com.netflixclone.extensions.getInitialSeasonIndex
 import com.netflixclone.network.models.TvDetailsResponse
 import com.netflixclone.network.models.TvSeasonDetailsResponse
 import kotlinx.coroutines.Dispatchers
@@ -12,67 +12,40 @@ import kotlinx.coroutines.launch
 
 class TvShowDetailsViewModel(private val repository: MediaRepository) : ViewModel() {
 
-    val tvDetailsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val tvDetails: MutableLiveData<TvDetailsResponse> = MutableLiveData()
-
-    val selectedSeasonDetailsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val selectedSeasonDetails: MutableLiveData<TvSeasonDetailsResponse> = MutableLiveData()
-    val selectedSeasonIndex: MutableLiveData<Int> = MutableLiveData(0)
-
-    val similarTvShowsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val similarTvShows: MutableLiveData<List<TvShow>> = MutableLiveData()
-
-    val tvShowVideosLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val tvShowVideos: MutableLiveData<List<Video>> = MutableLiveData()
+    val details: MutableLiveData<Resource<TvDetailsResponse>> =
+        MutableLiveData(Resource(false, null, null))
+    val selectedSeasonNameIndexPair = MutableLiveData<Pair<String, Int>>(null)
+    val selectedSeasonDetails: MutableLiveData<Resource<TvSeasonDetailsResponse>> =
+        MutableLiveData(Resource(false, null, null))
 
     fun fetchTvShowDetails(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            tvDetailsLoading.postValue(true)
+            details.postValue(details.value!!.copy(isLoading = true))
             try {
-                val response = repository.fetchTvShowDetails(id)
-                tvDetails.postValue(response)
-                tvDetailsLoading.postValue(false)
+                val tvShowResponse = repository.fetchTvShowDetails(id)
+                val initialSeasonIndex = tvShowResponse.getInitialSeasonIndex()
+                if (initialSeasonIndex != -1) {
+                    val initialSeason = tvShowResponse.seasons[initialSeasonIndex]
+                    val firstSeasonDetails =
+                        repository.fetchTvShowSeasonDetails(id, initialSeason.seasonNumber)
+                    selectedSeasonDetails.postValue(selectedSeasonDetails.value!!.copy(data = firstSeasonDetails))
+                    selectedSeasonNameIndexPair.postValue(Pair(initialSeason.name, initialSeasonIndex))
+                }
+                details.postValue(details.value!!.copy(isLoading = false, data = tvShowResponse))
             } catch (e: Exception) {
-                tvDetailsLoading.postValue(false)
-            }
-        }
-    }
-
-    fun fetchSimilarTvShows(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            similarTvShowsLoading.postValue(true)
-            try {
-                val response = repository.fetchSimilarTvShows(id)
-                similarTvShows.postValue(response.results)
-                similarTvShowsLoading.postValue(false)
-            } catch (e: Exception) {
-                similarTvShowsLoading.postValue(false)
-            }
-        }
-    }
-
-    fun fetchTvShowVideos(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            tvShowVideosLoading.postValue(true)
-            try {
-                val response = repository.fetchTvShowVideos(id)
-                tvShowVideos.postValue(response.results)
-                tvShowVideosLoading.postValue(false)
-            } catch (e: Exception) {
-                tvShowVideosLoading.postValue(false)
+                details.postValue(details.value!!.copy(isLoading = false, error = e.message))
             }
         }
     }
 
     fun fetchSeasonDetails(id: Int, seasonNumber: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedSeasonDetailsLoading.postValue(true)
+            selectedSeasonDetails.postValue(selectedSeasonDetails.value!!.copy(isLoading = true))
             try {
                 val response = repository.fetchTvShowSeasonDetails(id, seasonNumber)
-                selectedSeasonDetails.postValue(response)
-                selectedSeasonDetailsLoading.postValue(false)
+                selectedSeasonDetails.postValue(selectedSeasonDetails.value!!.copy(data = response))
             } catch (e: Exception) {
-                selectedSeasonDetailsLoading.postValue(false)
+                selectedSeasonDetails.postValue(selectedSeasonDetails.value!!.copy(error = e.message))
             }
         }
     }

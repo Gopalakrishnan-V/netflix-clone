@@ -1,5 +1,6 @@
 package com.netflixclone.screens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -14,9 +15,12 @@ import com.netflixclone.adapters.TvShowsAdapter
 import com.netflixclone.adapters.VideosController
 import com.netflixclone.data.Injection
 import com.netflixclone.data.TvShowDetailsViewModel
+import com.netflixclone.data_models.Resource
 import com.netflixclone.data_models.TvShow
+import com.netflixclone.data_models.Video
 import com.netflixclone.databinding.ActivityTvDetailsScreenBinding
 import com.netflixclone.extensions.*
+import com.netflixclone.network.models.TvDetailsResponse
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -87,20 +91,20 @@ class TvDetailsActivity : BaseActivity() {
     }
 
     private fun handleSeasonPickerSelectClick() {
-        val details = tvShowDetailsViewModel.tvDetails.value
+        val details = tvShowDetailsViewModel.details.value?.data
         if (details != null) {
             val seasonNames =
                 details.seasons.mapIndexed { _, season -> season.name } as ArrayList<String>
 
-            val newFragment: ItemPickerFragment =
+            val itemPickerFragment: ItemPickerFragment =
                 ItemPickerFragment.newInstance(seasonNames,
-                    tvShowDetailsViewModel.selectedSeasonIndex.value!!)
-            newFragment.showsDialog = true
-            newFragment.show(supportFragmentManager, "pickerDialog")
-            newFragment.setItemClickListener { newSelectedPosition ->
+                    tvShowDetailsViewModel.selectedSeasonNameIndexPair.value?.second!!)
+            itemPickerFragment.showsDialog = true
+            itemPickerFragment.show(supportFragmentManager, "pickerDialog")
+            itemPickerFragment.setItemClickListener { newSelectedPosition ->
                 val selectedSeason = details.seasons[newSelectedPosition]
-                binding.selectedSeasonText.text = selectedSeason.name
-                tvShowDetailsViewModel.selectedSeasonIndex.value = newSelectedPosition
+                tvShowDetailsViewModel.selectedSeasonNameIndexPair.value =
+                    Pair(selectedSeason.name, newSelectedPosition)
                 lifecycleScope.launch {
                     tvShowDetailsViewModel.fetchSeasonDetails(tvId!!, selectedSeason.seasonNumber)
                 }
@@ -108,52 +112,44 @@ class TvDetailsActivity : BaseActivity() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setupViewModel() {
         tvShowDetailsViewModel = ViewModelProvider(this,
             Injection.provideTvShowDetailsViewModelFactory()).get(TvShowDetailsViewModel::class.java)
 
-        tvShowDetailsViewModel.tvDetailsLoading.observe(this) { checkAndShowLoader() }
-        tvShowDetailsViewModel.tvDetails.observe(this) {
+        tvShowDetailsViewModel.details.observe(this) {
+            val loading = (it!!.isLoading && it.data == null)
+            if (loading) {
+                setLoading(true)
+            } else if (it.data != null) {
+                setLoading(false)
+                updateDetails(it.data)
+
+                // Similar TV Shows
+                similarTvItemsAdapter.submitList(it.data.similar.results)
+                similarTvItemsAdapter.notifyDataSetChanged()
+
+                // Videos
+                checkAndLoadVideo(it.data.videos.results)
+                videosController.setData(it.data.videos.results)
+            }
+        }
+
+        tvShowDetailsViewModel.selectedSeasonNameIndexPair.observe(this) {
             if (it != null) {
-                onDetailsLoad()
-                updateDetails()
+                binding.selectedSeasonText.text = it.first
             }
         }
 
         tvShowDetailsViewModel.selectedSeasonDetails.observe(this) {
-            episodeItemsAdapter.submitList(it.episodes)
-        }
-
-        tvShowDetailsViewModel.similarTvShowsLoading.observe(this) {
-            if (it) {
-                binding.tabContentLoader.show()
-            } else {
-                binding.tabContentLoader.hide()
+            if (it.data != null) {
+                episodeItemsAdapter.submitList(it.data.episodes)
             }
-        }
-        tvShowDetailsViewModel.similarTvShows.observe(this) {
-            similarTvItemsAdapter.submitList(it)
-            similarTvItemsAdapter.notifyDataSetChanged()
-        }
-
-        tvShowDetailsViewModel.tvShowVideos.observe(this) {
-            checkAndLoadVideo()
-            videosController.setData(it)
         }
     }
 
-    private fun checkAndShowLoader() {
-        val detailsLoading = tvShowDetailsViewModel.tvDetailsLoading.value!!
-        val details = tvShowDetailsViewModel.tvDetails.value
-        val selectedSeasonDetailsLoading =
-            tvShowDetailsViewModel.selectedSeasonDetailsLoading.value!!
-        val selectedSeasonDetails = tvShowDetailsViewModel.selectedSeasonDetails.value
-        val videosLoading = tvShowDetailsViewModel.tvShowVideosLoading.value!!
-        val videos = tvShowDetailsViewModel.tvShowVideos.value
-
-        val loading =
-            (detailsLoading && details == null) || (selectedSeasonDetailsLoading && selectedSeasonDetails == null) || (videosLoading && videos == null)
-        if (loading) {
+    private fun setLoading(flag: Boolean) {
+        if (flag) {
             binding.loader.root.show()
             binding.content.hide()
             binding.youtubePlayerView.hide()
@@ -166,29 +162,12 @@ class TvDetailsActivity : BaseActivity() {
     }
 
     private fun fetchInitialData() {
-        if (tvId == null) {
-            return
-        }
-        tvShowDetailsViewModel.fetchTvShowDetails(tvId!!)
-        tvShowDetailsViewModel.fetchTvShowVideos(tvId!!)
-    }
-
-    private fun onDetailsLoad() {
-        val details = tvShowDetailsViewModel.tvDetails.value!!
-        if (details.seasons.isNotEmpty()) {
-            var initialSeasonIndex = details.seasons.indexOfFirst { it.seasonNumber > 0 }
-            if (initialSeasonIndex == -1) {
-                initialSeasonIndex = 0
-            }
-            val initialSeason = details.seasons[initialSeasonIndex]
-            binding.selectedSeasonText.text = initialSeason.name
-            tvShowDetailsViewModel.selectedSeasonIndex.value = initialSeasonIndex
-            tvShowDetailsViewModel.fetchSeasonDetails(tvId!!, initialSeason.seasonNumber)
+        if (tvId != null) {
+            tvShowDetailsViewModel.fetchTvShowDetails(tvId!!)
         }
     }
 
-    private fun updateDetails() {
-        val details = tvShowDetailsViewModel.tvDetails.value!!
+    private fun updateDetails(details: TvDetailsResponse) {
         Glide.with(this).load(details.getBackdropUrl()).transform(CenterCrop())
             .into(binding.thumbnail.backdropImage)
         binding.header.titleText.text = details.name
@@ -197,11 +176,11 @@ class TvDetailsActivity : BaseActivity() {
         binding.header.runtimeText.visibility = View.GONE
         binding.header.ratingText.text = details.voteAverage.toString()
     }
-
-    private fun checkAndLoadVideo() {
-        val videos = tvShowDetailsViewModel.tvShowVideos.value
-        val firstVideo = videos?.firstOrNull()
-        if (firstVideo?.site == "YouTube") {
+    
+    private fun checkAndLoadVideo(videos: List<Video>) {
+        val firstVideo =
+            videos.firstOrNull { video -> (video.type == "Trailer") && video.site == "YouTube" }
+        if (firstVideo != null) {
             if (!bannerVideoLoaded) {
                 binding.youtubePlayerView.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                     override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
@@ -248,7 +227,7 @@ class TvDetailsActivity : BaseActivity() {
             youTubePlayer: YouTubePlayer,
             state: PlayerConstants.PlayerState,
         ) {
-            if ((state == PlayerConstants.PlayerState.UNSTARTED) && !isVideoRestarted) {
+            if (!isVideoRestarted) {
                 youTubePlayer.mute()
             }
 
@@ -274,10 +253,6 @@ class TvDetailsActivity : BaseActivity() {
                     binding.seasonPicker.hide()
                     binding.episodesList.hide()
                     binding.similarTvsList.show()
-                    if (tvShowDetailsViewModel.similarTvShows.value == null) {
-                        binding.tabContentLoader.show()
-                        tvShowDetailsViewModel.fetchSimilarTvShows(tvId!!)
-                    }
                     binding.videosList.hide()
                 }
                 2 -> {

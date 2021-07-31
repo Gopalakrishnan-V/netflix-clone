@@ -1,6 +1,7 @@
 package com.netflixclone.network.models
 
 import com.netflixclone.data_models.IMovie
+import com.netflixclone.data_models.Movie
 import com.squareup.moshi.Json
 
 data class MovieDetailsResponse(
@@ -12,4 +13,6 @@ data class MovieDetailsResponse(
         @Json(name = "release_date") override val releaseDate: String?,
         @Json(name = "vote_average") override val voteAverage: Double,
         @Json(name = "runtime") val runtime: Int?,
+        @Json(name = "similar") val similar: PageResponse<Movie>,
+        @Json(name = "videos") val videos: VideosResponse,
 ): IMovie
