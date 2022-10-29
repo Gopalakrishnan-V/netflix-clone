@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.netflixclone.data_models.Resource
 import com.netflixclone.network.models.MovieDetailsResponse
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MovieDetailsViewModel(private val repository: MediaRepository) : ViewModel() {
+@HiltViewModel
+class MovieDetailsViewModel @Inject constructor() : ViewModel() {
     val details: MutableLiveData<Resource<MovieDetailsResponse>> =
         MutableLiveData(Resource(false, null, null))
 
@@ -16,7 +19,7 @@ class MovieDetailsViewModel(private val repository: MediaRepository) : ViewModel
         viewModelScope.launch(Dispatchers.IO) {
             details.postValue(details.value!!.copy(isLoading = true))
             try {
-                val response = repository.fetchMovieDetails(id)
+                val response = MediaRepository.fetchMovieDetails(id)
                 details.postValue(details.value!!.copy(isLoading = false, data = response))
             } catch (e: Exception) {
                 details.postValue(details.value!!.copy(isLoading = false, error = e.message))

@@ -6,8 +6,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.netflixclone.data_models.FeedItem
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class FeedViewModel : ViewModel() {
+@HiltViewModel
+class FeedViewModel @Inject constructor(): ViewModel() {
     var feedItemsSourceFactory: FeedItemsSourceFactory? = null
 
     fun getFeedPagedList(): LiveData<PagedList<FeedItem>> {

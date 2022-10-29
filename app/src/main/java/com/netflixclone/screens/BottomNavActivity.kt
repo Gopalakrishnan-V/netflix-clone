@@ -2,12 +2,8 @@ package com.netflixclone.screens
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.netflixclone.R
-import com.netflixclone.data.FeedViewModel
-import com.netflixclone.data.Injection
 import com.netflixclone.databinding.ActivityBottomNavBinding
-
 
 class BottomNavActivity : BaseActivity() {
     private lateinit var binding: ActivityBottomNavBinding
@@ -21,8 +17,6 @@ class BottomNavActivity : BaseActivity() {
     private val fragmentManager = supportFragmentManager
     private var activeFragment: Fragment = feedFragment
 
-    private lateinit var feedViewModel: FeedViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
@@ -31,11 +25,6 @@ class BottomNavActivity : BaseActivity() {
         setContentView(binding.root)
 
         setupUI()
-        setupViewModel()
-    }
-
-    private fun setupViewModel() {
-        feedViewModel = ViewModelProvider(this, Injection.provideFeedViewModelFactory()).get(FeedViewModel::class.java)
     }
 
     private fun setupUI() {

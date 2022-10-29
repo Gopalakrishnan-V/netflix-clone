@@ -16,7 +16,8 @@
         <activity
             android:name=".screens.BottomNavActivity"
             android:theme="@style/SplashTheme"
-            android:configChanges="uiMode|orientation">
+            android:configChanges="uiMode|orientation"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
