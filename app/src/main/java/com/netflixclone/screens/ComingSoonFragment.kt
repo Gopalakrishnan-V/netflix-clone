@@ -6,7 +6,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import com.netflixclone.adapters.UpcomingMovieViewHolder
 import com.netflixclone.adapters.UpcomingMoviesAdapter
-import com.netflixclone.data.Injection
 import com.netflixclone.data.MediaViewModel
 import com.netflixclone.databinding.FragmentComingSoonBinding
 import com.netflixclone.extensions.hide
@@ -24,13 +23,13 @@ import kotlinx.coroutines.launch
 
 class ComingSoonFragment : BottomNavFragment() {
     private lateinit var binding: FragmentComingSoonBinding
-    private lateinit var viewModel: MediaViewModel
+    private val viewModel by viewModels<MediaViewModel>()
     private lateinit var upcomingMoviesAdapter: UpcomingMoviesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentComingSoonBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -39,7 +38,6 @@ class ComingSoonFragment : BottomNavFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupUI()
-        setupViewModel()
     }
 
     override fun onFirstDisplay() {
@@ -94,13 +92,6 @@ class ComingSoonFragment : BottomNavFragment() {
         lifecycleScope.launch {
 
         }
-    }
-
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideMediaViewModelFactory()
-        ).get(MediaViewModel::class.java)
     }
 
     private fun fetchData() {

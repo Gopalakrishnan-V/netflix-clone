@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -13,9 +13,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.netflixclone.adapters.EpisodeItemsAdapter
 import com.netflixclone.adapters.TvShowsAdapter
 import com.netflixclone.adapters.VideosController
-import com.netflixclone.data.Injection
 import com.netflixclone.data.TvShowDetailsViewModel
-import com.netflixclone.data_models.Resource
 import com.netflixclone.data_models.TvShow
 import com.netflixclone.data_models.Video
 import com.netflixclone.databinding.ActivityTvDetailsScreenBinding
@@ -25,12 +23,14 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class TvDetailsActivity : BaseActivity() {
     lateinit var binding: ActivityTvDetailsScreenBinding
-    private lateinit var tvShowDetailsViewModel: TvShowDetailsViewModel
+    private val tvShowDetailsViewModel: TvShowDetailsViewModel by viewModels()
     private lateinit var episodeItemsAdapter: EpisodeItemsAdapter
     private lateinit var similarTvItemsAdapter: TvShowsAdapter
     private lateinit var videosController: VideosController
@@ -64,7 +64,7 @@ class TvDetailsActivity : BaseActivity() {
     }
 
     private fun setupUI() {
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { finish() }
         title = ""
         showBackIcon()
 
@@ -114,9 +114,6 @@ class TvDetailsActivity : BaseActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setupViewModel() {
-        tvShowDetailsViewModel = ViewModelProvider(this,
-            Injection.provideTvShowDetailsViewModelFactory()).get(TvShowDetailsViewModel::class.java)
-
         tvShowDetailsViewModel.details.observe(this) {
             val loading = (it!!.isLoading && it.data == null)
             if (loading) {

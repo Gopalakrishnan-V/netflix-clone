@@ -2,14 +2,13 @@ package com.netflixclone.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.google.android.material.tabs.TabLayout
 import com.netflixclone.adapters.MoviesAdapter
 import com.netflixclone.adapters.VideosController
-import com.netflixclone.data.Injection
 import com.netflixclone.data.MovieDetailsViewModel
 import com.netflixclone.data_models.Movie
 import com.netflixclone.data_models.Video
@@ -20,12 +19,14 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MovieDetailsActivity : BaseActivity() {
     lateinit var binding: ActivityMovieDetailsBinding
-    private lateinit var movieDetailsViewModel: MovieDetailsViewModel
+    private val movieDetailsViewModel: MovieDetailsViewModel by viewModels()
     private lateinit var similarMoviesItemsAdapter: MoviesAdapter
     private lateinit var videosController: VideosController
     private val movieId: Int?
@@ -57,7 +58,7 @@ class MovieDetailsActivity : BaseActivity() {
     }
 
     private fun setupUI() {
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { finish() }
         binding.loader.root.show()
         binding.content.hide()
         binding.youtubePlayerView.hide()
@@ -83,9 +84,6 @@ class MovieDetailsActivity : BaseActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setupViewModel() {
-        movieDetailsViewModel = ViewModelProvider(this,
-            Injection.provideMovieDetailsViewModelFactory()).get(MovieDetailsViewModel::class.java)
-
         movieDetailsViewModel.details.observe(this) {
             if (it.isLoading && it.data == null) {
                 showLoader(true)

@@ -2,11 +2,11 @@ package com.netflixclone.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import com.netflixclone.adapters.MediaItemsAdapter
-import com.netflixclone.data.Injection
+import com.netflixclone.adapters.TopMoviesController
 import com.netflixclone.data.SearchResultsViewModel
 import com.netflixclone.data_models.Media
 import com.netflixclone.data_models.Movie
@@ -14,13 +14,13 @@ import com.netflixclone.databinding.ActivitySearchBinding
 import com.netflixclone.extensions.hide
 import com.netflixclone.extensions.hideKeyboard
 import com.netflixclone.extensions.show
-import com.netflixclone.adapters.TopMoviesController
 import com.netflixclone.extensions.toMediaBsData
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var searchResultsViewModel: SearchResultsViewModel
+    private val searchResultsViewModel: SearchResultsViewModel by viewModels()
     private lateinit var topSearchesController: TopMoviesController
     private lateinit var searchResultsAdapter: MediaItemsAdapter
 
@@ -77,22 +77,16 @@ class SearchActivity : AppCompatActivity() {
     private fun handleMediaClick(media: Media) {
         hideKeyboard()
         binding.searchTextInput.clearFocus()
-        var id: Int? = null
         if (media is Media.Movie) {
             MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-                .show(supportFragmentManager, id.toString())
+                .show(supportFragmentManager, media.id.toString())
         } else if (media is Media.Tv) {
             MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-                .show(supportFragmentManager, id.toString())
+                .show(supportFragmentManager, media.id.toString())
         }
     }
 
     private fun setupViewModel() {
-        searchResultsViewModel =
-            ViewModelProvider(this, Injection.provideSearchResultsViewModelFactory()).get(
-                SearchResultsViewModel::class.java
-            )
-
         searchResultsViewModel.popularMoviesLoading.observe(this) { }
         searchResultsViewModel.popularMovies.observe(this) {
             if (it != null) {

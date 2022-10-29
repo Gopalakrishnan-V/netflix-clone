@@ -5,18 +5,19 @@ import androidx.paging.PagingData
 import com.netflixclone.data_models.Movie
 import com.netflixclone.data_models.TvShow
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class MediaViewModel(private val repository: MediaRepository) : ViewModel() {
+class MediaViewModel @Inject constructor() : ViewModel() {
 
     fun getUpcomingMovies(): Flow<PagingData<Movie>> {
-        return repository.getUpcomingMovies()
+        return MediaRepository.getUpcomingMovies()
     }
 
     fun getPopularMovies(): Flow<PagingData<Movie>> {
-        return repository.getPopularMoviesStream()
+        return MediaRepository.getPopularMoviesStream()
     }
 
     fun getPopularTvShows(): Flow<PagingData<TvShow>> {
-        return repository.getPopularTvShowsStream()
+        return MediaRepository.getPopularTvShowsStream()
     }
 }

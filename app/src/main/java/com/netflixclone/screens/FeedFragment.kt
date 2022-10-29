@@ -8,29 +8,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.netflixclone.R
+import com.netflixclone.adapters.FeedItemsController
 import com.netflixclone.data.FeedViewModel
-import com.netflixclone.data.Injection
-import com.netflixclone.data.MediaViewModel
 import com.netflixclone.data_models.Media
 import com.netflixclone.databinding.FragmentFeedBinding
-import com.netflixclone.adapters.FeedItemsController
 import com.netflixclone.extensions.toMediaBsData
 import kotlin.math.min
 
-
 class FeedFragment : BottomNavFragment() {
     private lateinit var binding: FragmentFeedBinding
-    private lateinit var viewModel: MediaViewModel
-    private lateinit var feedViewModel: FeedViewModel
+    private val feedViewModel by viewModels<FeedViewModel>()
     private lateinit var feedItemsController: FeedItemsController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding = FragmentFeedBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -39,7 +35,6 @@ class FeedFragment : BottomNavFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupUI()
-        setupViewModel()
         (requireActivity() as BottomNavActivity).onFeedFragmentViewCreated()
     }
 
@@ -54,13 +49,12 @@ class FeedFragment : BottomNavFragment() {
     }
 
     private fun handleMediaClick(media: Media) {
-        var id: Int? = null
         if (media is Media.Movie) {
             MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-                .show(requireActivity().supportFragmentManager, id.toString())
+                .show(requireActivity().supportFragmentManager, media.id.toString())
         } else if (media is Media.Tv) {
             MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-                .show(requireActivity().supportFragmentManager, id.toString())
+                .show(requireActivity().supportFragmentManager, media.id.toString())
         }
     }
 
@@ -94,17 +88,6 @@ class FeedFragment : BottomNavFragment() {
             val intent = Intent(requireActivity(), PopularMoviesActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideMediaViewModelFactory()
-        ).get(MediaViewModel::class.java)
-        feedViewModel = ViewModelProvider(
-            this,
-            Injection.provideFeedViewModelFactory()
-        ).get(FeedViewModel::class.java)
     }
 
     private fun calculateAndSetListTopPadding() {

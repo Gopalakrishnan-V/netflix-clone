@@ -1,10 +1,9 @@
 package com.netflixclone.screens
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.netflixclone.adapters.PagedTvShowsAdapter
-import com.netflixclone.data.Injection
 import com.netflixclone.data.MediaViewModel
 import com.netflixclone.data_models.TvShow
 import com.netflixclone.databinding.ActivityPopularTvBinding
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class PopularTvActivity : BaseActivity() {
     private lateinit var binding: ActivityPopularTvBinding
-    private lateinit var viewModel: MediaViewModel
+    private val viewModel by viewModels<MediaViewModel>()
     private lateinit var popularTvItemsAdapter: PagedTvShowsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +23,6 @@ class PopularTvActivity : BaseActivity() {
         setContentView(binding.root)
 
         setupUI()
-        setupViewModel()
         fetchData()
     }
 
@@ -34,16 +32,9 @@ class PopularTvActivity : BaseActivity() {
     }
 
     private fun setupUI() {
-        binding.toolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { finish() }
         popularTvItemsAdapter = PagedTvShowsAdapter(this::handleTvClick)
         binding.popularTvList.adapter = popularTvItemsAdapter
-    }
-
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(
-            this,
-            Injection.provideMediaViewModelFactory()
-        ).get(MediaViewModel::class.java)
     }
 
     private fun fetchData() {

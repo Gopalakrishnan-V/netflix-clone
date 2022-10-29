@@ -44,7 +44,7 @@ class ItemPickerFragment : DialogFragment() {
         itemClickCallback = callback
     }
 
-    private fun handleItemClick(item: PickerItem, position: Int) {
+    private fun handleItemClick(_item: PickerItem, position: Int) {
         itemClickCallback?.invoke(position)
         dismiss()
     }
