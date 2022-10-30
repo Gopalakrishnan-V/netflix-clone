@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.platform.ComposeView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.netflixclone.databinding.FragmentDownloadsBinding
@@ -17,19 +18,22 @@ class DownloadsFragment : BottomNavFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentDownloadsBinding.inflate(layoutInflater, container, false)
-        return binding.root
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                DownloadsScreen()
+            }
+        }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupUI()
-    }
-
-    private fun setupUI() {
-        Glide.with(binding.posterImage).load(POSTER_IMAGE).into(binding.posterImage)
-    }
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        setupUI()
+//    }
+//
+//    private fun setupUI() {
+//        Glide.with(binding.posterImage).load(POSTER_IMAGE).into(binding.posterImage)
+//    }
 
     override fun onFirstDisplay() {
     }
