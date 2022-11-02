@@ -1,3 +1,7 @@
 package com.netflixclone.data_models
 
-data class Resource<T>(val isLoading: Boolean, val data: T?, val error: String?)
+data class Resource<T>(
+    val isLoading: Boolean = false,
+    val data: T? = null,
+    val error: String? = null,
+)

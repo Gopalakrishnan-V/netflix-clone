@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import com.netflixclone.data.FeedViewModel
 import com.netflixclone.data_models.Media
 import com.netflixclone.databinding.FragmentFeedBinding
 import com.netflixclone.extensions.toMediaBsData
+import com.netflixclone.screens.feed.FeedScreen
 import kotlin.math.min
 
 class FeedFragment : BottomNavFragment() {
@@ -27,20 +29,24 @@ class FeedFragment : BottomNavFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentFeedBinding.inflate(inflater, container, false)
-        return binding.root
+        return ComposeView(requireContext()).apply {
+            setContent { FeedScreen() }
+        }
+
+//        binding = FragmentFeedBinding.inflate(inflater, container, false)
+//        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupUI()
-        (requireActivity() as BottomNavActivity).onFeedFragmentViewCreated()
+//        setupUI()
+//        (requireActivity() as BottomNavActivity).onFeedFragmentViewCreated()
     }
 
     override fun onFirstDisplay() {
-        feedViewModel.getFeedPagedList()
-            .observe(viewLifecycleOwner) { feedItemsController.submitList(it) }
+//        feedViewModel.getFeedPagedList()
+//            .observe(viewLifecycleOwner) { feedItemsController.submitList(it) }
     }
 
     private fun handleSearchClick() {

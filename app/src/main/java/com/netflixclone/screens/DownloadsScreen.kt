@@ -27,10 +27,9 @@ const val BANNER_IMAGE = "https://i.ibb.co/12fHwfg/netflix-downloads.png"
 @Composable
 fun DownloadsScreen() {
     MaterialTheme(colors = darkColors(background = Color.Black)) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background)
+        Column(Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
         ) {
             TopAppBar(
                 title = { Text(text = "Downloads") },
