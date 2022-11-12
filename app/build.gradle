@@ -111,6 +111,7 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata'
 
     implementation "io.coil-kt:coil-compose:2.2.2"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha17"
 
     // Tests
     testImplementation 'junit:junit:4.13.2'

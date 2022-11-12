@@ -45,31 +45,29 @@ fun FeedScreen(feedViewModel: FeedViewModel = viewModel()) {
         }
     }
 
-    MaterialTheme(colors = darkColors(background = Color.Black)) {
-        LazyColumn(
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background)
-                .padding(bottom = 24.dp),
-            state = listState,
-        ) {
-            if (feedList.data != null) {
-                items(feedList.data, key = {
-                    when (it) {
-                        is FeedItem.Header -> "header"
-                        is FeedItem.HorizontalList -> it.title
-                    }
-                }, contentType = {
-                    when (it) {
-                        is FeedItem.Header -> 1
-                        is FeedItem.HorizontalList -> 2
-                    }
-                }) {
-                    when (it) {
-                        is FeedItem.Header -> FeedHeader(it.data, handleItemClick)
-                        is FeedItem.HorizontalList -> {
-                            FeedHorizontalList(it.title, it.data, it.isLarge, handleItemClick)
-                        }
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+            .padding(bottom = 24.dp),
+        state = listState,
+    ) {
+        if (feedList.data != null) {
+            items(feedList.data, key = {
+                when (it) {
+                    is FeedItem.Header -> "header"
+                    is FeedItem.HorizontalList -> it.title
+                }
+            }, contentType = {
+                when (it) {
+                    is FeedItem.Header -> 1
+                    is FeedItem.HorizontalList -> 2
+                }
+            }) {
+                when (it) {
+                    is FeedItem.Header -> FeedHeader(it.data, handleItemClick)
+                    is FeedItem.HorizontalList -> {
+                        FeedHorizontalList(it.title, it.data, it.isLarge, handleItemClick)
                     }
                 }
             }
