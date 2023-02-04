@@ -47,7 +47,7 @@ fun FeedHeader(data: Media, onInfoClick: (Media) -> Unit) {
 
     Box(Modifier
         .fillMaxWidth()
-        .aspectRatio(0.8f)
+        .aspectRatio(0.7f)
     ) {
         AsyncImage(
             model = posterUrl,
@@ -59,7 +59,7 @@ fun FeedHeader(data: Media, onInfoClick: (Media) -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(135.dp)
+                .aspectRatio(1.5f)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -86,7 +86,7 @@ fun FeedHeader(data: Media, onInfoClick: (Media) -> Unit) {
         ) {
             Text(
                 text = genresText.orEmpty(),
-                modifier = Modifier.padding(top = 12.dp),
+                modifier = Modifier.padding(top = 120.dp),
                 color = colorResource(R.color.text_primary),
                 fontSize = 12.sp,
                 overflow = TextOverflow.Ellipsis,

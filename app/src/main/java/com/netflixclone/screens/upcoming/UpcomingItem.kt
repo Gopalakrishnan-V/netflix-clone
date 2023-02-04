@@ -1,10 +1,13 @@
 package com.netflixclone.screens.upcoming
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Colors
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,14 +31,20 @@ import com.netflixclone.extensions.getPosterUrl
 import com.netflixclone.extensions.getReleaseDayMonth
 
 @Composable
-fun UpcomingItem(movie: Movie) {
+fun UpcomingItem(movie: Movie, onClick: (Movie) -> Unit) {
     val releaseDayMonth = remember(movie) { movie.getReleaseDayMonth() }
     val subText = remember(releaseDayMonth) {
         if (releaseDayMonth != null) "Coming on $releaseDayMonth" else null
     }
     val genresText = remember(movie) { movie.getGenresText() }
 
-    Column(Modifier.padding(bottom = 20.dp)) {
+    Column(Modifier
+        .clickable(
+            interactionSource = MutableInteractionSource(),
+            indication = rememberRipple(),
+            onClick = { onClick(movie) })
+        .padding(bottom = 20.dp)
+    ) {
         Box {
             Column {
                 Box() {

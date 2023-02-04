@@ -11,18 +11,20 @@ import androidx.compose.ui.platform.ComposeView
 import com.netflixclone.screens.feed.FeedScreen
 
 class FeedFragment : BottomNavFragment() {
+    lateinit var rootView: ComposeView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return ComposeView(requireContext()).apply {
+        rootView = ComposeView(requireContext()).apply {
             setContent {
                 MaterialTheme(colors = darkColors(background = Color.Black)) {
                     FeedScreen()
                 }
             }
         }
+        return rootView
     }
 
     override fun onFirstDisplay() {

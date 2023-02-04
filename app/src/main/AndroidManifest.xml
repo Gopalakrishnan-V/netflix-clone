@@ -17,6 +17,7 @@
             android:name=".screens.BottomNavActivity"
             android:theme="@style/SplashTheme"
             android:configChanges="uiMode|orientation"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

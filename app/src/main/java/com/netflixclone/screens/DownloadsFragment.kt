@@ -10,20 +10,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 
 class DownloadsFragment : BottomNavFragment() {
+    lateinit var rootView: ComposeView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return ComposeView(requireContext()).apply {
-            setContent {
-                MaterialTheme(colors = darkColors(background = Color.Black)) {
-                    DownloadsScreen()
-                }
-            }
-        }
+        rootView = ComposeView(requireContext())
+        return rootView
     }
 
     override fun onFirstDisplay() {
+        rootView.setContent {
+            MaterialTheme(colors = darkColors(background = Color.Black)) {
+                DownloadsScreen()
+            }
+        }
     }
 }

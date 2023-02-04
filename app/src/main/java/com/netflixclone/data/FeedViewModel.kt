@@ -9,6 +9,7 @@ import androidx.paging.PagedList
 import com.netflixclone.data_models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import java.util.*
 import javax.inject.Inject
 
 sealed class FeedItem {
@@ -96,7 +97,13 @@ class FeedViewModel @Inject constructor() : ViewModel() {
         return try {
             val response = MediaRepository.fetchTrending("day")
             val filteredResults = response.results.filter { it.mediaType != MediaType.PERSON }
-            filteredResults.firstOrNull()
+            if (filteredResults.isNotEmpty()) {
+                val dayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                val filteredResultsCount = filteredResults.count()
+                filteredResults.getOrNull(dayOfMonth % filteredResultsCount)
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }
