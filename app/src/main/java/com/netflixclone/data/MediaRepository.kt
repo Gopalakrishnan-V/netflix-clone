@@ -7,10 +7,12 @@ import com.netflixclone.data_models.Movie
 import com.netflixclone.data_models.TvShow
 import com.netflixclone.network.services.ApiClient
 import kotlinx.coroutines.flow.Flow
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 val defaultPagingConfig = PagingConfig(
-        pageSize = MediaRepository.NETWORK_PAGE_SIZE,
-        enablePlaceholders = false
+    pageSize = MediaRepository.NETWORK_PAGE_SIZE,
+    enablePlaceholders = false
 )
 
 object MediaRepository {
@@ -22,7 +24,8 @@ object MediaRepository {
         if (upcomingMovies != null) {
             return upcomingMovies!!
         }
-        upcomingMovies = Pager(config = defaultPagingConfig, pagingSourceFactory = { UpcomingMoviesPagingSource() }).flow
+        upcomingMovies = Pager(config = defaultPagingConfig,
+            pagingSourceFactory = { UpcomingMoviesPagingSource() }).flow
         return upcomingMovies!!
     }
 
@@ -30,7 +33,8 @@ object MediaRepository {
         if (popularMovies != null) {
             return popularMovies!!
         }
-        popularMovies = Pager(config = defaultPagingConfig, pagingSourceFactory = { PopularMoviesPagingSource() }).flow
+        popularMovies = Pager(config = defaultPagingConfig,
+            pagingSourceFactory = { PopularMoviesPagingSource() }).flow
         return popularMovies!!
     }
 
@@ -38,9 +42,13 @@ object MediaRepository {
         if (popularTvShows != null) {
             return popularTvShows!!
         }
-        popularTvShows = Pager(config = defaultPagingConfig, pagingSourceFactory = { PopularTvShowsPagingSource() }).flow
+        popularTvShows = Pager(config = defaultPagingConfig,
+            pagingSourceFactory = { PopularTvShowsPagingSource() }).flow
         return popularTvShows!!
     }
+
+    suspend fun fetchTrending(timeWindow: String = "week", page: Int = 1) =
+        ApiClient.TMDB.fetchTrending(timeWindow, page)
 
     suspend fun fetchMovieDetails(id: Int) = ApiClient.TMDB.fetchMovieDetails(id)
 
@@ -54,11 +62,31 @@ object MediaRepository {
 
     suspend fun fetchTvShowVideos(id: Int) = ApiClient.TMDB.fetchTvVideos(id)
 
-    suspend fun fetchTvShowSeasonDetails(id: Int, seasonNumber: Int) = ApiClient.TMDB.fetchTvSeasonDetails(id, seasonNumber)
+    suspend fun fetchTvShowSeasonDetails(id: Int, seasonNumber: Int) =
+        ApiClient.TMDB.fetchTvSeasonDetails(id, seasonNumber)
 
     suspend fun fetchPopularMovies(page: Int) = ApiClient.TMDB.fetchPopularMovies(page)
 
-    suspend fun fetchSearchResults(query: String, page: Int) = ApiClient.TMDB.fetchSearchResults(query, page)
+    suspend fun fetchPopularTvShows(page: Int) = ApiClient.TMDB.fetchPopularTvShows(page)
+
+    suspend fun fetchSearchResults(query: String, page: Int) =
+        ApiClient.TMDB.fetchSearchResults(query, page)
+
+    suspend fun discoverMovies(
+        withGenres: String? = null,
+        sortBy: String? = null,
+        voteCountGreater: Int? = null,
+        withWatchProviders: Int? = null,
+        watchRegion: String? = null,
+    ) = ApiClient.TMDB.discoverMovies(withGenres, sortBy, voteCountGreater, withWatchProviders, watchRegion)
+
+    suspend fun discoverTvShows(
+        withGenres: String? = null,
+        sortBy: String? = null,
+        voteCountGreater: Int? = null,
+        withWatchProviders: Int? = null,
+        watchRegion: String? = null,
+    ) = ApiClient.TMDB.discoverTvShows(withGenres, sortBy, voteCountGreater, withWatchProviders, watchRegion)
 
     const val NETWORK_PAGE_SIZE = 20
 }

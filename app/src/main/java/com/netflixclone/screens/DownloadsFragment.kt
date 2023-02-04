@@ -4,33 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.netflixclone.databinding.FragmentDownloadsBinding
-
-const val POSTER_IMAGE = "https://i.ibb.co/12fHwfg/netflix-downloads.png"
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.darkColors
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 
 class DownloadsFragment : BottomNavFragment() {
-    private lateinit var binding: FragmentDownloadsBinding
+    lateinit var rootView: ComposeView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentDownloadsBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupUI()
-    }
-
-    private fun setupUI() {
-        Glide.with(binding.posterImage).load(POSTER_IMAGE).into(binding.posterImage)
+        savedInstanceState: Bundle?,
+    ): View {
+        rootView = ComposeView(requireContext())
+        return rootView
     }
 
     override fun onFirstDisplay() {
+        rootView.setContent {
+            MaterialTheme(colors = darkColors(background = Color.Black)) {
+                DownloadsScreen()
+            }
+        }
     }
 }

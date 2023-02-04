@@ -1,6 +1,7 @@
 package com.netflixclone.screens
 
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import com.netflixclone.R
 import com.netflixclone.databinding.ActivityBottomNavBinding
@@ -18,8 +19,9 @@ class BottomNavActivity : BaseActivity() {
     private var activeFragment: Fragment = feedFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
+//        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding = ActivityBottomNavBinding.inflate(layoutInflater)
         setContentView(binding.root)
