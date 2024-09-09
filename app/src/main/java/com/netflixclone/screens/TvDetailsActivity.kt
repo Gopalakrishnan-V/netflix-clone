@@ -209,13 +209,11 @@ class TvDetailsActivity : BaseActivity() {
                 lifecycleScope.launch {
                     youTubePlayer.seekTo(0f)
                     youTubePlayer.unMute()
-                    binding.youtubePlayerView.getPlayerUiController().showUi(false)
                     delay(50)
                     binding.thumbnail.container.hide()
                     binding.thumbnail.videoLoader.hide()
                     binding.youtubePlayerView.show()
                     delay(1000)
-                    binding.youtubePlayerView.getPlayerUiController().showUi(true)
                 }
             }
         }

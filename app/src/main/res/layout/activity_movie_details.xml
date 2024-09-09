@@ -30,8 +30,7 @@
         android:id="@+id/youtube_player_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:showFullScreenButton="false" />
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/content"
